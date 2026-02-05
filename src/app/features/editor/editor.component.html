@@ -1,0 +1,82 @@
+    <!-- EDITOR -->
+    <div class="editor">
+        <h3>Message Editor</h3>
+
+        <!-- TYPE SWITCH -->
+        <select (change)="switchType($any($event.target).value)">
+            <option value="text">Text</option>
+            <option value="rich-card">Rich Card</option>
+            <option value="carousel">Carousel</option>
+        </select>
+
+        <!-- TEXT EDITOR -->
+        <textarea *ngIf="textMessage as text" rows="4" [value]="text.content"
+            (input)="onTextInput($any($event.target).value)">
+        </textarea>
+
+
+        <!-- RICH CARD EDITOR -->
+        <div *ngIf="richCard as card">
+            <input placeholder="Title" [value]="card.card.title"
+                (input)="onRichCardChange('title', $any($event.target).value)" />
+
+            <textarea rows="3" placeholder="Description" [value]="card.card.description"
+                (input)="onRichCardChange('description', $any($event.target).value)">
+          </textarea>
+            <h5>Suggestions (IN)</h5>
+
+            <button (click)="addRichCardSuggestion()">+ Add</button>
+
+            <div *ngFor="let s of card.card.suggestions ?? []; let si = index">
+                <input [value]="s.text" (input)="updateCardSuggestion(0, si, $any($event.target).value)" />
+            </div>
+        </div>
+
+        <!-- CAROUSEL EDITOR -->
+        <div *ngIf="carousel as carouselCards">
+            <h4>Carousel Cards</h4>
+
+            <div *ngFor="let card of carouselCards.cards; let i = index">
+                <input placeholder="Title" [value]="card.title"
+                    (input)="updateCarouselCard(i, 'title', $any($event.target).value)" />
+
+                <textarea rows="2" placeholder="Description" [value]="card.description"
+                    (input)="updateCarouselCard(i, 'description', $any($event.target).value)">
+            </textarea>
+                <h5>Suggestions (IN)</h5>
+
+                <button (click)="addCardSuggestion(i)">+ Add</button>
+
+                <div *ngFor="let s of card.suggestions ?? []; let si = index">
+                    <input [value]="s.text" (input)="updateCardSuggestion(i, si, $any($event.target).value)" />
+                </div>
+            </div>
+
+            <button (click)="addCard()">+ Add Card</button>
+
+        </div>
+
+        <!-- SUGGESTIONS OUT -->
+        <div class="suggestions">
+            <h4>Suggestions</h4>
+
+            <button (click)="addSuggestion()">+ Add suggestion</button>
+
+            <div *ngFor="let s of present()?.suggestions ?? []; let i = index">
+                <input [value]="s.text" (input)="updateSuggestion(i, $any($event.target).value)" />
+            </div>
+        </div>
+
+        <div class="actions">
+            <button (click)="undo()" [disabled]="past().length === 0">Undo</button>
+            <button (click)="redo()" [disabled]="future().length === 0">Redo</button>
+
+            <button (click)="exportJson()">Export JSON</button>
+            <button (click)="showImport = !showImport">Import JSON</button>
+        </div>
+
+        <textarea *ngIf="showImport" rows="6" placeholder="Paste message JSON here"
+            (change)="importJson($any($event.target).value)">
+        </textarea>
+
+    </div>
